@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rompecabezas Deslizante</title>
+
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg,#4facfe,#00f2fe);
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        height:100vh;
+        margin:0;
+    }
+
+    h1{
+        color:white;
+    }
+
+    #puzzle{
+        display:grid;
+        grid-template-columns:repeat(3,100px);
+        grid-template-rows:repeat(3,100px);
+        gap:4px;
+        margin:20px 0;
+    }
+
+    .tile{
+        background:white;
+        border-radius:10px;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        font-size:32px;
+        font-weight:bold;
+        cursor:pointer;
+        transition:0.2s;
+        box-shadow:0 3px 8px rgba(0,0,0,0.2);
+    }
+
+    .tile:hover{
+        transform:scale(1.05);
+    }
+
+    .empty{
+        background:transparent;
+        box-shadow:none;
+        cursor:default;
+    }
+
+    button{
+        padding:10px 20px;
+        border:none;
+        border-radius:8px;
+        background:#ff9800;
+        color:white;
+        font-size:16px;
+        cursor:pointer;
+    }
+
+    #message{
+        color:white;
+        font-size:20px;
+        margin-top:10px;
+    }
+</style>
+</head>
+<body>
+
+<h1>🧩 Rompecabezas 3x3</h1>
+
+<div id="puzzle"></div>
+
+<button onclick="shuffle()">Mezclar</button>
+
+<div id="message"></div>
+
+<script>
+let board = [1,2,3,4,5,6,7,8,0];
+
+function render(){
+    const puzzle = document.getElementById("puzzle");
+    puzzle.innerHTML = "";
+
+    board.forEach((value,index)=>{
+        const tile = document.createElement("div");
+
+        if(value === 0){
+            tile.className = "tile empty";
+        }else{
+            tile.className = "tile";
+            tile.textContent = value;
+            tile.onclick = ()=>move(index);
+        }
+
+        puzzle.appendChild(tile);
+    });
+}
+
+function move(index){
+    const emptyIndex = board.indexOf(0);
+
+    const validMoves = [
+        emptyIndex - 1,
+        emptyIndex + 1,
+        emptyIndex - 3,
+        emptyIndex + 3
+    ];
+
+    const sameRow =
+        (Math.floor(index/3) === Math.floor(emptyIndex/3));
+
+    if(
+        (index === emptyIndex - 1 && sameRow) ||
+        (index === emptyIndex + 1 && sameRow) ||
+        index === emptyIndex - 3 ||
+        index === emptyIndex + 3
+    ){
+        [board[index], board[emptyIndex]] =
+        [board[emptyIndex], board[index]];
+
+        render();
+        checkWin();
+    }
+}
+
+function shuffle(){
+    for(let i=0;i<200;i++){
+        const empty = board.indexOf(0);
+
+        const moves = [];
+
+        const row = Math.floor(empty/3);
+        const col = empty%3;
+
+        if(col>0) moves.push(empty-1);
+        if(col<2) moves.push(empty+1);
+        if(row>0) moves.push(empty-3);
+        if(row<2) moves.push(empty+3);
+
+        const randomMove =
+            moves[Math.floor(Math.random()*moves.length)];
+
+        [board[empty], board[randomMove]] =
+        [board[randomMove], board[empty]];
+    }
+
+    document.getElementById("message").textContent="";
+    render();
+}
+
+function checkWin(){
+    const solved = [1,2,3,4,5,6,7,8,0];
+
+    if(JSON.stringify(board) === JSON.stringify(solved)){
+        document.getElementById("message").textContent =
+            "🎉 ¡Felicidades! Has completado el rompecabezas.";
+    }
+}
+
+render();
+</script>
+
+</body>
+</html>
