@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Adivina el Número</title>
+<style>
+body{
+    font-family:Arial;
+    text-align:center;
+    background:#0f172a;
+    color:white;
+    padding-top:50px;
+}
+input,button{
+    padding:10px;
+    font-size:18px;
+    margin:10px;
+}
+button{
+    background:#3b82f6;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>🎯 Adivina el Número</h1>
+<p>Estoy pensando un número entre 1 y 100</p>
+
+<input type="number" id="numero">
+<button onclick="verificar()">Intentar</button>
+
+<h2 id="mensaje"></h2>
+<p>Intentos: <span id="intentos">0</span></p>
+
+<script>
+let secreto = Math.floor(Math.random()*100)+1;
+let intentos = 0;
+
+function verificar(){
+    let valor = Number(document.getElementById("numero").value);
+    intentos++;
+
+    document.getElementById("intentos").textContent = intentos;
+
+    if(valor < secreto){
+        document.getElementById("mensaje").innerHTML="⬆️ Más alto";
+    }
+    else if(valor > secreto){
+        document.getElementById("mensaje").innerHTML="⬇️ Más bajo";
+    }
+    else{
+        document.getElementById("mensaje").innerHTML=
+        "🎉 ¡Ganaste! El número era " + secreto;
+    }
+}
+</script>
+
+</body>
+</html>
