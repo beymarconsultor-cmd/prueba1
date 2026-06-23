@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego de la Viborita</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:white;
+}
+
+.container{
+    text-align:center;
+}
+
+h1{
+    margin-bottom:15px;
+    color:#22c55e;
+}
+
+canvas{
+    background:#111827;
+    border:4px solid #22c55e;
+    border-radius:10px;
+    box-shadow:0 0 20px rgba(34,197,94,.5);
+}
+
+.info{
+    margin-top:15px;
+    font-size:20px;
+}
+
+button{
+    margin-top:15px;
+    padding:10px 20px;
+    border:none;
+    background:#22c55e;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#16a34a;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🐍 Juego de la Viborita</h1>
+
+    <canvas id="game" width="400" height="400"></canvas>
+
+    <div class="info">
+        Puntos: <span id="score">0</span>
+    </div>
+
+    <button onclick="restartGame()">Reiniciar</button>
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const box = 20;
+const canvasSize = 400;
+
+let snake;
+let food;
+let score;
+let direction;
+let game;
+
+function initGame() {
+    snake = [{x: 10 * box, y: 10 * box}];
+
+    food = {
+        x: Math.floor(Math.random() * 20) * box,
+        y: Math.floor(Math.random() * 20) * box
+    };
+
+    score = 0;
+    direction = "RIGHT";
+
+    document.getElementById("score").textContent = score;
+
+    if (game) clearInterval(game);
+    game = setInterval(draw, 120);
+}
+
+document.addEventListener("keydown", changeDirection);
+
+function changeDirection(event) {
+    const key = event.key;
+
+    if (key === "ArrowLeft" && direction !== "RIGHT")
+        direction = "LEFT";
+
+    if (key === "ArrowUp" && direction !== "DOWN")
+        direction = "UP";
+
+    if (key === "ArrowRight" && direction !== "LEFT")
+        direction = "RIGHT";
+
+    if (key === "ArrowDown" && direction !== "UP")
+        direction = "DOWN";
+}
+
+function collision(head, body) {
+    for (let i = 0; i < body.length; i++) {
+        if (head.x === body[i].x && head.y === body[i].y) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function draw() {
+
+    ctx.fillStyle = "#111827";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Comida
+    ctx.fillStyle = "#ef4444";
+    ctx.beginPath();
+    ctx.arc(food.x + box/2, food.y + box/2, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Serpiente
+    for(let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = i === 0 ? "#22c55e" : "#4ade80";
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+
+        ctx.strokeStyle = "#0f172a";
+        ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+    }
+
+    let snakeX = snake[0].x;
+    let snakeY = snake[0].y;
+
+    if(direction === "LEFT") snakeX -= box;
+    if(direction === "UP") snakeY -= box;
+    if(direction === "RIGHT") snakeX += box;
+    if(direction === "DOWN") snakeY += box;
+
+    // Comer comida
+    if(snakeX === food.x && snakeY === food.y) {
+        score++;
+        document.getElementById("score").textContent = score;
+
+        food = {
+            x: Math.floor(Math.random() * 20) * box,
+            y: Math.floor(Math.random() * 20) * box
+        };
+    } else {
+        snake.pop();
+    }
+
+    const newHead = {
+        x: snakeX,
+        y: snakeY
+    };
+
+    // Fin del juego
+    if (
+        snakeX < 0 ||
+        snakeY < 0 ||
+        snakeX >= canvasSize ||
+        snakeY >= canvasSize ||
+        collision(newHead, snake)
+    ) {
+        clearInterval(game);
+
+        setTimeout(() => {
+            alert("Game Over 🐍\nPuntaje: " + score);
+        }, 100);
+
+        return;
+    }
+
+    snake.unshift(newHead);
+}
+
+function restartGame() {
+    initGame();
+}
+
+initGame();
+</script>
+
+</body>
+</html>
