@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Piedra Papel Tijera</title>
+
+<style>
+body{
+    font-family:Arial;
+    text-align:center;
+    background:#111827;
+    color:white;
+    padding-top:50px;
+}
+
+button{
+    font-size:22px;
+    padding:15px 25px;
+    margin:10px;
+    cursor:pointer;
+    border:none;
+    border-radius:10px;
+}
+
+h1{
+    color:#22c55e;
+}
+
+#resultado{
+    margin-top:30px;
+    font-size:24px;
+}
+</style>
+</head>
+<body>
+
+<h1>✊✋✌️ Piedra Papel Tijera</h1>
+
+<button onclick="jugar('Piedra')">✊ Piedra</button>
+<button onclick="jugar('Papel')">✋ Papel</button>
+<button onclick="jugar('Tijera')">✌️ Tijera</button>
+
+<div id="resultado"></div>
+
+<script>
+
+function jugar(usuario){
+
+    const opciones = ["Piedra","Papel","Tijera"];
+    const pc = opciones[Math.floor(Math.random()*3)];
+
+    let mensaje = "";
+
+    if(usuario === pc){
+        mensaje = "🤝 Empate";
+    }
+    else if(
+        (usuario==="Piedra" && pc==="Tijera") ||
+        (usuario==="Papel" && pc==="Piedra") ||
+        (usuario==="Tijera" && pc==="Papel")
+    ){
+        mensaje = "🏆 Ganaste";
+    }else{
+        mensaje = "💻 La computadora ganó";
+    }
+
+    document.getElementById("resultado").innerHTML=
+    `
+    Tu elección: <b>${usuario}</b><br><br>
+    Computadora: <b>${pc}</b><br><br>
+    ${mensaje}
+    `;
+}
+
+</script>
+
+</body>
+</html>
